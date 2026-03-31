@@ -26,3 +26,6 @@ class SignUpFormApplicant(UserCreationForm):
         model = User
         fields = ["username","email","first_name","last_name","password1","password2","resume"]
 
+class LoginForm(forms.Form):
+    username = forms.CharField(required=True)
+    password = forms.CharField(widget=forms.PasswordInput,required=True)

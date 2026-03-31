@@ -66,10 +66,8 @@ class RecruiterProfile(models.Model):
 def update_profile_signal(sender, instance, created, **kwargs):
     if created and instance.role == "APP":
         ApplicantProfile.objects.create(user=instance)
-        instance.applicant_profile.save()
     elif created and instance.role == "REC":
         RecruiterProfile.objects.create(user=instance)
-        instance.recruiter_profile.save()
     
     
 
