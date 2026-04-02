@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
+    'crispy_bootstrap4',
     'main_app'
 ]
 
@@ -139,3 +141,5 @@ LOGOUT_REDIRECT_URL = "/login/"
 
 
 MAINTENANCE_MODE = False # custom setting to enable maintenance mode for whole site , can be used in middleware to check if site is in maintenance mode or not and then show maintenance page accordingly
+
+CRISPY_TEMPLATE_PACK = "bootstrap4" # setting for crispy forms to use bootstrap 4 css classes for styling forms

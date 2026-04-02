@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Company,Job,Application,ApplicantProfile, RecruiterProfile,User
+from .models import Company,Job,Application,ApplicantProfile, RecruiterProfile,User,Skill 
 
 class JobInline(admin.TabularInline):
     model = Job
@@ -46,3 +46,6 @@ class ApplicationAdmin(admin.ModelAdmin):
     list_display = ('id', 'job', 'applicant', 'cover_letter', 'status', 'applied_at')
     list_filter = ('job','status')
 
+@admin.register(Skill)
+class SkillAdmin(admin.ModelAdmin):
+    list_display = ('id','name')

@@ -1,0 +1,16 @@
+INSERT INTO main_app_skill (name) VALUES
+('Python'),
+('JavaScript'),
+('React'),
+('Django'),
+('PostgreSQL'),
+('AWS'),
+('Docker'),
+('Git'),
+('Node.js'),
+('MongoDB'),
+('HTML/CSS'),
+('REST API'),
+('Linux'),
+('DevOps'),
+('Machine Learning');

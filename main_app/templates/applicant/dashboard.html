@@ -1,0 +1,8 @@
+{% extends 'common/base.html' %}
+    {% block heading %}<h2> Welcome {{ user.username }} , Your Applications </h2>{% endblock heading %}
+    {% block content %}
+    {% for application in applications %}
+    <p> {{ application.job.title }} - {{ application.applied_at }} - {{application.status}}</p>
+    {% endfor %}
+    {% include 'auth/logout.html' %}
+    {% endblock content %}

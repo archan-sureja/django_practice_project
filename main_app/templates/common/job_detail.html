@@ -1,0 +1,16 @@
+{% extends "common/base.html" %}
+{% block heading %}<h2>{{ job.title }}</h2>{% endblock heading %}
+{% block content %}
+<p><b>Description:</b> {{ job.description }}</p>
+<p><b>Location:</b> {{ job.location }}</p>
+<p><b>Job Type:</b> {{ job.get_job_type_display }}</p>
+<p><b>Salary range(Monthly in INR):</b> {{ job.salary_min }} - {{ job.salary_max }}</p>
+<p><b>Deadline:</b> {{ job.deadline }}</p>
+<p><b>Posted At:</b> {{ job.posted_at }}</p>
+<p><b>Active:</b> {% if job.is_active %}Yes{% else %}No{% endif %}</p>
+<p><b>Recruiter Name:</b> {{ job.posted_by.get_full_name }}</p>
+<p><b>Recruiter Email:</b> {{ job.posted_by.email }}</p>
+<p><b>Company:</b> {{ job.company.name }}</p>
+<p><b>Company Description:</b> {{ job.company.description }}</p>
+<p><b>Company website:</b> <a href="{{ job.company.website }}" target="_blank">{{ job.company.website }}</a></p>
+{% endblock content %}

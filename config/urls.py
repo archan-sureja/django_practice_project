@@ -16,17 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.contrib.auth import views as auth_views
-from main_app.views import sign_up_applicant, sign_up_recruiter , login_view , dashboard , logout_view
+from main_app.views import common_views, applicant_views, recruiter_views
+
+
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('signup/recruiter/',sign_up_recruiter , name="sign_up_recruiter"),
-    path('signup/applicant/',sign_up_applicant , name="sign_up_applicant"),
-    # path('login/',login_view , name="login"), 
-    path('login/',auth_views.LoginView.as_view(template_name="auth/login.html"),name="login"), # using built in login view of django which handles both get and post request for login 
-    # default form : autheticationForm with username and password field and template : registration/login.html
-    # settings required : LOGIN_REDIRECT_URL="/dashboard" and LOGOUT_REDIRECT_URL="/login" , where to redirect after login and logout respectively
-    path('dashboard/', dashboard, name="dashboard"),
-    # path('logout/', logout_view, name="logout")
-    path('logout/', auth_views.LogoutView.as_view(), name="logout") # using built in logout view of django which handles logout functionality and then redirects to LOGOUT_REDIRECT_URL
+    path('signup/applicant/', applicant_views.SignupApplicant.as_view(), name='signup_applicant'),
+    path('signup/recruiter/', recruiter_views.SignupRecruiter.as_view(), name='signup_recruiter'),
+    path('login/',common_views.LoginView.as_view(), name='login'),
+    path('applicant/dashboard/', applicant_views.ApplicantDashboard.as_view(), name='applicant_dashboard'),
+    path('recruiter/dashboard/', recruiter_views.RecruiterDashboard.as_view(), name='recruiter_dashboard'),
+    path('jobs/', common_views.JobListView.as_view(), name='job_list'),
+    path('jobs/<int:pk>/', common_views.JobDetailVew.as_view(), name='job_detail'),
+    path('logout/',common_views.LogoutView.as_view(), name='logout'),
 ]
