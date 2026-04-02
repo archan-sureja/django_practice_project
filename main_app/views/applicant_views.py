@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from main_app.forms import SignUpFormApplicant
 from main_app.models import ApplicantProfile, Application
-
+from main_app.views.common_views import RoleCheckMixin
 
 class SignupApplicant(CreateView):
     form_class = SignUpFormApplicant
@@ -27,7 +27,9 @@ class SignupApplicant(CreateView):
         messages.success(self.request,"Signed up successfully , Now you can login")
         return response
 
-class ApplicantDashboard(LoginRequiredMixin, ListView):
+class ApplicantDashboard(LoginRequiredMixin,RoleCheckMixin, ListView):
+    role = "APP"
+    role_check_fail_url = "login"
     model = Application 
     login_url = "/login/"
     template_name = "applicant/dashboard.html"

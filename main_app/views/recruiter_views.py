@@ -1,10 +1,12 @@
 from django.views.generic import CreateView
+from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.contrib import messages
 from main_app.forms import SignUpFormRecruiter
 from main_app.models import RecruiterProfile,Job
 from main_app.views.common_views import ListView
+from main_app.views.common_views import RoleCheckMixin
 
 class SignupRecruiter(CreateView):
     form_class = SignUpFormRecruiter
@@ -25,8 +27,10 @@ class SignupRecruiter(CreateView):
         response = super().form_valid(form)
         messages.success(self.request,"Signed up successfully , Now you can login")
         return response
-
-class RecruiterDashboard(LoginRequiredMixin, ListView):
+    
+class RecruiterDashboard(LoginRequiredMixin,RoleCheckMixin, ListView):
+    role = "REC"
+    role_check_fail_url = "login"
     model = Job 
     template_name = "recruiter/dashboard.html"
     context_object_name = "jobs"

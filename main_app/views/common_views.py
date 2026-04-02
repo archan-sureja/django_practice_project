@@ -51,3 +51,13 @@ class JobDetailVew(DetailView):
 
     def get_object(self, queryset = ...):
         return Job.objects.select_related("posted_by","company").get(pk=self.kwargs.get("pk")) #pylint: disable=E1101
+
+class RoleCheckMixin:
+    role = None # role must be set in child class
+    role_check_fail_url =None
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != self.role:
+            messages.error(request, "You are not authorized to access this page")
+            logout(request)
+            return redirect(self.role_check_fail_url)
+        return super().dispatch(request, *args, **kwargs)
