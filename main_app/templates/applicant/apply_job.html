@@ -1,0 +1,29 @@
+{% extends 'common/base.html'%}
+{% load crispy_forms_tags %}
+    {% block heading %}<h2>Apply for {{ job.title }}</h2>{% endblock heading %}
+    {% block content %}
+    <p><b>Description:</b> {{ job.description }}</p>
+    <p><b>Location:</b> {{ job.location }}</p>
+    <p><b>Job Type:</b> {{ job.get_job_type_display }}</p>
+    <p><b>Salary range(Yearly in USD):</b> {{ job.salary_min }} - {{ job.salary_max }}</p>
+    <p><b>Deadline:</b> {{ job.deadline }}</p>
+    <p><b>Posted At:</b> {{ job.posted_at }}</p>
+    <p><b>Active:</b> {% if job.is_active %}Yes{% else %}No{% endif %}</p>
+    <p><b>Recruiter Name:</b> {{ job.posted_by.get_full_name }}</p>
+    <p><b>Recruiter Email:</b> {{ job.posted_by.email }}</p>
+    <p><b>Company:</b> {{ job.company.name }}</p>
+    <p><b>Company Description:</b> {{ job.company.description }}</p>
+    <p><b>Company website:</b> <a href="{{ job.company.website }}" target="_blank">{{ job.company.website }}</a></p>
+
+    {% if application %}
+        <h3>You have already applied for this job.</h3>
+        <p><b>Your Cover Letter:</b></p>
+        <pre>{{ application.cover_letter }}</pre>
+        <p><b>Your Application Status:</b>{{ application.status }}</p>
+    {% else %}
+        <h3>Submit Your Application</h3>
+            {% csrf_token %}
+            {% crispy form form.helper %}
+    {% endif %}
+    <a href="{% url 'applicant_dashboard' %}" class="btn btn-secondary mb-3">Back to Dashboard</a>
+    {% endblock content %}

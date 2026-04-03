@@ -1,8 +1,51 @@
-{% extends 'common/base.html' %}
-    {% block heading %}<h2> Welcome {{ user.username }} , Your Applications </h2>{% endblock heading %}
+{%extends 'common/base.html'%}
+    {% block heading %}<h2>Job Listings</h2>{% endblock heading %}
+
     {% block content %}
-    {% for application in applications %}
-    <p> {{ application.job.title }} - {{ application.applied_at }} - {{application.status}}</p>
-    {% endfor %}
-    {% include 'auth/logout.html' %}
+    <table id="jobsTable" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Location</th>
+                <th>Posted At</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in jobs %}
+            <tr>
+                <td>{{ job.title }}</td>
+                <td>{{ job.description }}</td>
+                <td>{{ job.location }}</td>
+                <td>{{ job.posted_at }}</td>
+                <td><a href="{% url 'job_detail' job.id %}">View Details</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script type="text/javascript">
+    $(document).ready(function() {
+    $('#jobsTable').DataTable();
+    });
+    </script>
+    {% comment %} <!-- Pagination -->
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">First</a>
+                &nbsp;
+                <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                &nbsp;
+            {% endif %}
+            
+            <span><b>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} </b> </span>
+            
+            {% if page_obj.has_next %}
+                &nbsp; 
+                <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                &nbsp; 
+                <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+            {% endif %}
+        </div> {% endcomment %}
+        {% include 'auth/logout.html' %}
     {% endblock content %}

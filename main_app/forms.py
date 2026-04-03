@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from .models import Company , Skill
+from .models import Application, Company , Skill
 User = get_user_model()
 class SignUpFormRecruiter(UserCreationForm):
     """ custom sign up form"""
@@ -83,3 +83,15 @@ class LoginForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit','Login',css_class="btn btn-primary"))
+
+class ApplicationForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit','Apply',css_class="btn btn-primary"))
+        
+    class Meta:
+        model = Application 
+        fields = ["cover_letter"]
+        

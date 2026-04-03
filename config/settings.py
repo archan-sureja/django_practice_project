@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'crispy_bootstrap4',
-    'main_app'
+    'debug_toolbar',
+    'main_app',
+
 ]
 
 MIDDLEWARE = [
@@ -50,9 +52,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'main_app.middleware.MaintenanceModeMiddleware' # custom middleware to check if site is in maintenance mode or not and then show maintenance page accordingly
 ]
-
+INTERNAL_IPS = ['127.0.0.1']
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [

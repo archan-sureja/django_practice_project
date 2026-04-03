@@ -15,20 +15,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
 from main_app.views import common_views, applicant_views, recruiter_views
-
+import debug_toolbar
 
 
 
 urlpatterns = [
+    path('__debug__/', include(debug_toolbar.urls)),
     path('admin/', admin.site.urls),
     path('signup/applicant/', applicant_views.SignupApplicant.as_view(), name='signup_applicant'),
     path('signup/recruiter/', recruiter_views.SignupRecruiter.as_view(), name='signup_recruiter'),
     path('login/',common_views.LoginView.as_view(), name='login'),
+    path('applicant/dashboard/jobs/<int:job_id>/apply/', applicant_views.ApplyJobView.as_view(), name='apply_job'),
+    path('applicant/dashboard/jobs/<int:job_id>/', applicant_views.ApplicantJobDetailView.as_view(), name='job_detail'),
+    path('applicant/dashboard/applications/', applicant_views.ApplicantionListView.as_view(), name='applications'),
     path('applicant/dashboard/', applicant_views.ApplicantDashboard.as_view(), name='applicant_dashboard'),
     path('recruiter/dashboard/', recruiter_views.RecruiterDashboard.as_view(), name='recruiter_dashboard'),
-    path('jobs/', common_views.JobListView.as_view(), name='job_list'),
-    path('jobs/<int:pk>/', common_views.JobDetailVew.as_view(), name='job_detail'),
     path('logout/',common_views.LogoutView.as_view(), name='logout'),
 ]

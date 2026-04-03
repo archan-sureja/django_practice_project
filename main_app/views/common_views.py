@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponseForbidden
 from django.contrib.auth.models import Group
 from django.contrib import messages
 from django.shortcuts import render, redirect
@@ -38,26 +39,14 @@ class JobListView(ListView):
     model = Job
     template_name = "common/job_list.html"
     context_object_name = "jobs"
-    paginate_by = 10
     ordering = ["-posted_at"]
 
     def get_queryset(self):
         return Job.objects.filter(deadline__gte=timezone.localdate(),is_active=True) #pylint: disable=E1101
 
-class JobDetailVew(DetailView):
-    model = Job
-    template_name = "common/job_detail.html"
-    context_object_name = "job"
-
-    def get_object(self, queryset = ...):
-        return Job.objects.select_related("posted_by","company").get(pk=self.kwargs.get("pk")) #pylint: disable=E1101
-
 class RoleCheckMixin:
     role = None # role must be set in child class
-    role_check_fail_url =None
     def dispatch(self, request, *args, **kwargs):
         if request.user.role != self.role:
-            messages.error(request, "You are not authorized to access this page")
-            logout(request)
-            return redirect(self.role_check_fail_url)
+            return HttpResponseForbidden("You are not authorized to access this page")
         return super().dispatch(request, *args, **kwargs)

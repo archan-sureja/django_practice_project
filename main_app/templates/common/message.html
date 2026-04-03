@@ -1,9 +1,23 @@
 {% if messages %}
-<ul class="messages">
-{% for message in messages %}
-<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
-{{ message }}
-</li>
-{% endfor %}
-</ul>
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+   {% for message in messages %}
+   <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true">
+       <div class="toast-header">
+           <strong class="me-auto">{{ message.tags|title }}</strong>
+           <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"><img src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='black' d='M.293.293a1 1 0 0 1 1.414 0L8 6.586l6.293-6.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e" alt="Close"></button>
+       </div>
+       <div class="toast-body">
+           {{ message }}
+       </div>
+   </div>
+   {% endfor %}
+</div>
+<script>
+   document.addEventListener("DOMContentLoaded", function() {
+       var toastElements = document.querySelectorAll('.toast');
+       toastElements.forEach(function(toastElement) {
+           new bootstrap.Toast(toastElement).show();
+       });
+   });
+</script>
 {% endif %}

@@ -3,8 +3,9 @@ from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.contrib import messages
+from django.db.models import Prefetch
 from main_app.forms import SignUpFormRecruiter
-from main_app.models import RecruiterProfile,Job
+from main_app.models import Application, RecruiterProfile,Job
 from main_app.views.common_views import ListView
 from main_app.views.common_views import RoleCheckMixin
 
@@ -39,5 +40,6 @@ class RecruiterDashboard(LoginRequiredMixin,RoleCheckMixin, ListView):
     login_url = "/login/"
 
     def get_queryset(self):
-        return Job.objects.filter(posted_by=self.request.user) #pylint: disable=E1101
+        applications_with_applicants = Prefetch("applications", queryset=Application.objects.select_related("applicant"))#pylint: disable=E1101
+        return Job.objects.filter(posted_by=self.request.user).prefetch_related(applications_with_applicants) #pylint: disable=E1101
     
