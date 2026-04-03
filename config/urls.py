@@ -23,14 +23,23 @@ import debug_toolbar
 
 urlpatterns = [
     path('__debug__/', include(debug_toolbar.urls)),
+
     path('admin/', admin.site.urls),
+
     path('signup/applicant/', applicant_views.SignupApplicant.as_view(), name='signup_applicant'),
     path('signup/recruiter/', recruiter_views.SignupRecruiter.as_view(), name='signup_recruiter'),
     path('login/',common_views.LoginView.as_view(), name='login'),
-    path('applicant/dashboard/jobs/<int:job_id>/apply/', applicant_views.ApplyJobView.as_view(), name='apply_job'),
+
+    path('applicant/jobs/<int:job_id>/update/<int:application_id>/', applicant_views.JobApplicationView.as_view(),{"action":"update"}, name='update_application'),
+    path('applicant/dashboard/jobs/<int:job_id>/withdraw/<int:application_id>/', applicant_views.JobApplicationView.as_view(),{"action":"withdraw"}, name='withdraw_application'),
+    path('applicant/dashboard/jobs/<int:job_id>/apply/', applicant_views.JobApplicationView.as_view(),{"action":"create"}, name='create_application'),
+
     path('applicant/dashboard/jobs/<int:job_id>/', applicant_views.ApplicantJobDetailView.as_view(), name='job_detail'),
+
     path('applicant/dashboard/applications/', applicant_views.ApplicantionListView.as_view(), name='applications'),
+
     path('applicant/dashboard/', applicant_views.ApplicantDashboard.as_view(), name='applicant_dashboard'),
     path('recruiter/dashboard/', recruiter_views.RecruiterDashboard.as_view(), name='recruiter_dashboard'),
+
     path('logout/',common_views.LogoutView.as_view(), name='logout'),
 ]

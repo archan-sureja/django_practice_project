@@ -89,8 +89,7 @@ class ApplicationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        self.helper.add_input(Submit('submit','Apply',css_class="btn btn-primary"))
-        
+
     class Meta:
         model = Application 
         fields = ["cover_letter"]

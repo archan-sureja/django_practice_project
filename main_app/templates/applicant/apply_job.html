@@ -18,7 +18,7 @@
     {% if application %}
         <h3>You have already applied for this job.</h3>
         <p><b>Your Cover Letter:</b></p>
-        <pre>{{ application.cover_letter }}</pre>
+        <pre>{% crispy form form.helper %}</pre>
         <p><b>Your Application Status:</b>{{ application.status }}</p>
     {% else %}
         <h3>Submit Your Application</h3>

@@ -1,9 +1,12 @@
 from django.views import View 
-from django.views.generic import DetailView, ListView,CreateView , UpdateView
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import DetailView, ListView,CreateView
 from django.contrib.auth.models import Group
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
+from django.http import HttpResponseForbidden
+from crispy_forms.layout import Submit
 from main_app.forms import SignUpFormApplicant , ApplicationForm
 from main_app.models import ApplicantProfile, Application, Job 
 from main_app.views.common_views import RoleCheckMixin
@@ -57,50 +60,69 @@ class ApplicantJobDetailView(LoginRequiredMixin,RoleCheckMixin,DetailView):
     def get_object(self, queryset = ...):
         return Job.objects.select_related("posted_by","company").get(pk=self.kwargs.get("job_id")) #pylint: disable=E1101
 
-class ApplyJobView(LoginRequiredMixin,RoleCheckMixin,CreateView):
-    model = Application 
+
+class JobApplicationView(LoginRequiredMixin,RoleCheckMixin,View):
     role = "APP"
     login_url = "/login/"
-    # fields = ["cover_letter"]
-    template_name = "applicant/apply_job.html"
-    success_url = "/applicant/dashboard/applications/"
-    form_class = ApplicationForm
-    def form_valid(self, form):
-        application = form.save(commit=False)
-        application.applicant = self.request.user
-        application.job_id = self.kwargs.get("job_id")
-        application.save()
-        messages.success(self.request,"Applied for job successfully")
-        return super().form_valid(form)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["job"] = Job.objects.select_related("posted_by","company").get(pk=self.kwargs.get("job_id")) #pylint: disable=E1101
-        context["application"] = Application.objects.filter(applicant=self.request.user,job_id=self.kwargs.get("job_id")).first() #pylint: disable=E1101
-        return context
+    def get(self, request, *args, **kwargs):
+        job = Job.objects.get(pk=self.kwargs.get("job_id")) #pylint: disable=E1101
+        existing_application = Application.objects.filter( #pylint: disable=E1101
+            job=job,
+            applicant=request.user  
+        ).first() 
+        if existing_application and self.kwargs.get("action") == "create":
+            messages.success(request,"You have already applied for this job")
+            return redirect("applicant_dashboard")
+        if self.kwargs.get("action") == "update":
+            existing_application = get_object_or_404(
+                Application,
+                id=self.kwargs.get("application_id"),
+                applicant=request.user) 
+            form = ApplicationForm(instance=existing_application)
+            form.helper.add_input(Submit('submit','Update Application',css_class="btn btn-primary"))
 
-class UpdateApplicationView(LoginRequiredMixin,RoleCheckMixin,UpdateView):
-    model = Application 
-    role = "APP"
-    login_url = "/login/"
-    # fields = ["cover_letter"]
-    template_name = "applicant/apply_job.html"
-    success_url = "/applicant/dashboard/applications/"
-    form_class = ApplicationForm
+        elif self.kwargs.get("action") == "withdraw":
+            existing_application = get_object_or_404(
+                Application,
+                id=self.kwargs.get("application_id"),
+                applicant=request.user) 
+            existing_application.delete()
+            messages.success(request,"Application withdrawn successfully")
+            return redirect("applications")
+        elif self.kwargs.get("action") == "create":
+            form = ApplicationForm()
+            form.helper.add_input(Submit('submit','Apply for Job',css_class="btn btn-primary"))
+        else:
+            return HttpResponseForbidden("Invalid action")
+        context = {
+            "form": form,
+            "job": job,
+            "application": existing_application if self.kwargs.get("action") == "update" else None
+        }
+        return render(request,"applicant/apply_job.html",context)
 
-    def get_object(self, queryset = ...):
-        return Application.objects.get(applicant=self.request.user,job_id=self.kwargs.get("job_id")) #pylint: disable=E1101
-
-    def form_valid(self, form):
-        application = form.save(commit=False)
-        application.applicant = self.request.user
-        application.job_id = self.kwargs.get("job_id")
-        application.save()
-        messages.success(self.request,"Application updated successfully")
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["job"] = Job.objects.select_related("posted_by","company").get(pk=self.kwargs.get("job_id")) #pylint: disable=E1101
-        context["application"] = Application.objects.filter(applicant=self.request.user,job_id=self.kwargs.get("job_id")).first() #pylint: disable=E1101
-        return context
+    def post(self, request, *args, **kwargs):
+        job = Job.objects.get(pk=self.kwargs.get("job_id")) #pylint: disable=E1101
+        application = None
+        if self.kwargs.get("action") == "update":
+            application = get_object_or_404(
+                Application,
+                id=self.kwargs.get("application_id"),
+                applicant=request.user)
+        form = ApplicationForm(request.POST,request.FILES)
+        if form.is_valid():
+          if application:
+              application.cover_letter = form.cleaned_data.get("cover_letter")
+              application.save()
+              messages.success(request,"Application updated successfully")
+              return redirect("applicant_dashboard")
+          else:
+              Application.objects.create(
+                  job=job,
+                  applicant=request.user,
+                  cover_letter=form.cleaned_data.get("cover_letter")
+              )
+              messages.success(request,"Applied for job successfully")
+          return redirect("applications")
+        return render(request,"applicant/apply_job.html",{"form":form,"job":job})

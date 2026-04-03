@@ -34,16 +34,6 @@ class LogoutView(View):
         messages.success(request, "Logged out successfully")
         return redirect("login")
 
-
-class JobListView(ListView):
-    model = Job
-    template_name = "common/job_list.html"
-    context_object_name = "jobs"
-    ordering = ["-posted_at"]
-
-    def get_queryset(self):
-        return Job.objects.filter(deadline__gte=timezone.localdate(),is_active=True) #pylint: disable=E1101
-
 class RoleCheckMixin:
     role = None # role must be set in child class
     def dispatch(self, request, *args, **kwargs):

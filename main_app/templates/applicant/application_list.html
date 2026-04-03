@@ -1,12 +1,15 @@
 {% extends 'common/base.html' %}
     {% block heading %}<h2> Welcome {{ user.username }} , Your Applications </h2>{% endblock heading %}
     {% block content %}
+    <a href="{% url 'applicant_dashboard' %}" class="btn btn-secondary mb-3">Back to Dashboard</a>
+    {% include 'auth/logout.html' %}
     <table id="applicationsTable" class="table table-striped table-bordered">
         <thead>
         <tr>
             <th>Job Title</th>
             <th>Applied At</th>
             <th>Status</th>
+            <th></th>
             <th></th>
         </tr>
         </thead>
@@ -16,7 +19,8 @@
             <td>{{ application.job.title }}</td>
             <td>{{ application.applied_at }}</td>
             <td>{{ application.status }}</td>
-            <td><a href="{% url 'job_detail' application.job.id %}">View Job</a></td>
+            <td><a href="{% url 'withdraw_application' application.job.id application.id %}">Withdraw</a></td>
+            <td><a href="{% url 'update_application' application.job.id application.id %}">Update</a></td>
         </tr>
     {% endfor %}
     <tbody>
@@ -26,6 +30,5 @@
     $('#applicationsTable').DataTable();
     });
     </script>
-    <a href="{% url 'applicant_dashboard' %}" class="btn btn-secondary mb-3">Back to Dashboard</a>
-    {% include 'auth/logout.html' %}
+
     {% endblock content %}

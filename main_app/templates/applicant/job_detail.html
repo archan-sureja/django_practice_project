@@ -13,6 +13,6 @@
 <p><b>Company:</b> {{ job.company.name }}</p>
 <p><b>Company Description:</b> {{ job.company.description }}</p>
 <p><b>Company website:</b> <a href="{{ job.company.website }}" target="_blank">{{ job.company.website }}</a></p>
-<a href="{% url 'apply_job' job.id %}" class="btn btn-primary mb-3">Apply for this Job</a>
+<a href="{% url 'create_application' job.id %}" class="btn btn-primary mb-3">Apply for this Job</a>
 <a href="{% url 'applicant_dashboard' %}" class="btn btn-secondary mb-3">Back to Dashboard</a>
 {% endblock content %}
