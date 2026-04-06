@@ -39,7 +39,8 @@ urlpatterns = [
     path('applicant/dashboard/applications/', applicant_views.ApplicantionListView.as_view(), name='applications'),
 
     path('applicant/dashboard/', applicant_views.ApplicantDashboard.as_view(), name='applicant_dashboard'),
-    path('recruiter/dashboard/', recruiter_views.RecruiterDashboard.as_view(), name='recruiter_dashboard'),
 
+    path('recruiter/dashboard/<int:job_id>/applications/',recruiter_views.JobWiseApplications.as_view(),name="job_wise_applications"),
+    path('recruiter/dashboard/', recruiter_views.RecruiterDashboard.as_view(), name='recruiter_dashboard'),
     path('logout/',common_views.LogoutView.as_view(), name='logout'),
 ]

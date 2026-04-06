@@ -65,16 +65,20 @@ class JobApplicationView(LoginRequiredMixin,RoleCheckMixin,View):
     role = "APP"
     login_url = "/login/"
 
-    def get(self, request, *args, **kwargs):
-        job = Job.objects.get(pk=self.kwargs.get("job_id")) #pylint: disable=E1101
-        existing_application = Application.objects.filter( #pylint: disable=E1101
+    def get(self, request, *args, **kwargs): 
+        if self.kwargs.get("action") == "create":
+            job = Job.objects.get(pk=self.kwargs.get("job_id")) #pylint: disable=E1101
+            existing_application = Application.objects.filter( #pylint: disable=E1101
             job=job,
             applicant=request.user  
-        ).first() 
-        if existing_application and self.kwargs.get("action") == "create":
-            messages.success(request,"You have already applied for this job")
-            return redirect("applicant_dashboard")
-        if self.kwargs.get("action") == "update":
+            ).first()
+            if existing_application:
+                messages.success(request,"You have already applied for this job")
+                return redirect("applications")
+            else:
+                form = ApplicationForm()
+                form.helper.add_input(Submit('submit','Apply for Job',css_class="btn btn-primary"))
+        elif self.kwargs.get("action") == "update":
             existing_application = get_object_or_404(
                 Application,
                 id=self.kwargs.get("application_id"),
@@ -90,9 +94,6 @@ class JobApplicationView(LoginRequiredMixin,RoleCheckMixin,View):
             existing_application.delete()
             messages.success(request,"Application withdrawn successfully")
             return redirect("applications")
-        elif self.kwargs.get("action") == "create":
-            form = ApplicationForm()
-            form.helper.add_input(Submit('submit','Apply for Job',css_class="btn btn-primary"))
         else:
             return HttpResponseForbidden("Invalid action")
         context = {
@@ -118,7 +119,7 @@ class JobApplicationView(LoginRequiredMixin,RoleCheckMixin,View):
               messages.success(request,"Application updated successfully")
               return redirect("applicant_dashboard")
           else:
-              Application.objects.create(
+              Application.objects.create( #pylint: disable=E1101
                   job=job,
                   applicant=request.user,
                   cover_letter=form.cleaned_data.get("cover_letter")

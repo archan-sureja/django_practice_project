@@ -17,7 +17,12 @@ class User(AbstractUser):
     ROLES = [("REC","recruiter"),("APP","applicant")]
     role = models.CharField(choices=ROLES)
     # email = models.EmailField(unique=True)
+    @property
+    def full_name(self):
+        return self.first_name + " " + self.last_name
 
+    def __str__(self):
+        return self.first_name + " " + self.last_name
 class Job(models.Model):
 
     JOB_TYPES = [("FULL","full-time"),("PART","part-time"),("CONTRACT","contract")]

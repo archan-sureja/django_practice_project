@@ -1,0 +1,24 @@
+{% extends "common/base.html" %}
+      {% block heading %}<h2> Total Applications {{ applications|length}}</h2>{% endblock heading %}
+      {% block content%}
+        <table id="relatedApplications" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <td>applicant name </td> 
+                    <td>skills</td>
+                    <td>experience</td>
+                    <td></td>
+                </tr>
+            </thead>
+        </tbody>
+            {% for item in applications %}
+            <tr>
+                <td>{{item.applicant}}</td>
+                <td>{{item.applicant.applicant_profile.skills.all|join:","}}</td>
+                <td>{{item.applicant.applicant_profile.experience}}</td>
+                <td><a href="{% url 'process_application' application.id %}">details</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+      {% endblock content%}
