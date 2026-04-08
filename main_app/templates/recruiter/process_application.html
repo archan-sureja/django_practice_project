@@ -1,6 +1,13 @@
 {% extends 'common/base.html'%}
-{% block heading%} {% endblock heading%}
-
+{% block heading%} Details of application{% endblock heading%}
+{% load crispy_forms_tags %}
 {% block content%} 
-
+<p><b>Applicant Name : </b> {{ application.applicant }}</p>
+<p><b>Applicant Email : </b> {{ application.applicant.email }}</p>
+<p><b>Applicant Skills : </b>{{ application.applicant.applicant_profile.skills.all|join:","}}</p>
+{% comment %} urls of file after custom file handling {% endcomment %}
+<p><b>Applicant resume : </b> <a href="{{ application.applicant.applicant_profile.resume.url}}" target="_blank">Download Resume</a></p>
+<p><b>Applicant Cover letter : </b><a href="{{ application.cover_letter.url}}" target="_blank">Download Cover Letter</a></p>
+<p><b>Applicant experience : </b>{{ application.applicant.applicant_profile.experience }}</p>
+<p>{% crispy form form.helper %}</p>
 {% endblock content%}

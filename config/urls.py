@@ -15,6 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path,include
 from main_app.views import common_views, applicant_views, recruiter_views
 import debug_toolbar
@@ -41,6 +43,12 @@ urlpatterns = [
     path('applicant/dashboard/', applicant_views.ApplicantDashboard.as_view(), name='applicant_dashboard'),
 
     path('recruiter/dashboard/<int:job_id>/applications/',recruiter_views.JobWiseApplications.as_view(),name="job_wise_applications"),
+    path('recruiter/dashboard/process/applications/<int:application_id>/',recruiter_views.ProcessApplication.as_view(),name="process_application"),
+    path('recruiter/dashboard/jobs/create/', recruiter_views.CreateJob.as_view(), name='create_job'),
+    path('recruiter/dashboard/jobs/<int:job_id>/edit/', recruiter_views.EditJob.as_view(), name='edit_job'),
     path('recruiter/dashboard/', recruiter_views.RecruiterDashboard.as_view(), name='recruiter_dashboard'),
     path('logout/',common_views.LogoutView.as_view(), name='logout'),
 ]
+
+if settings.DEBUG:  # Only in development
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

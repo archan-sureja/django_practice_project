@@ -1,0 +1,7 @@
+{% extends 'common/base.html' %}
+{% load crispy_forms_tags %}
+{% block heading %} Edit Job {% endblock heading %}
+{% block content %}
+    {% crispy form form.helper %}
+    <a href="{% url 'recruiter_dashboard' %}" class="btn btn-secondary mb-3">Back to Dashboard</a>
+{% endblock content %}

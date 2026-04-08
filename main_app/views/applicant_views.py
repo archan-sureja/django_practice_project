@@ -16,16 +16,29 @@ class SignupApplicant(CreateView):
     template_name = "auth/sign_up.html"
     success_url = "/login/"
 
+    # def post(self, request, *args, **kwargs):
+    #     print("=" * 50)
+    #     print(f"REQUEST.FILES: {request.FILES}")
+    #     print(f"REQUEST.POST keys: {list(request.POST.keys())}")
+    #     print(f"Upload handlers: {request.upload_handlers}")
+    #     print("=" * 50)
+        
+    #     form = self.get_form()
+    #     print(f"Form errors: {form.errors}")
+    #     print(f"Form FILES: {form.files}")
+    
+    # ... rest of your code
     def form_valid(self, form):
+        
         user = form.save(commit=False)
         user.role = "APP"
-        group = Group.objects.get(name="applicant")
-        user.groups.add(group) # adding user to applicant group for permission management
+        # group = Group.objects.get(name="applicant")
+        # user.groups.add(group) # adding user to applicant group for permission management
         user.save()
         #pylint: disable=E1101
         ApplicantProfile.objects.filter(user=user).update(
                 resume=form.cleaned_data.get("resume")
-        ) 
+        )
         response = super().form_valid(form)
         messages.success(self.request,"Signed up successfully , Now you can login")
         return response
@@ -66,8 +79,8 @@ class JobApplicationView(LoginRequiredMixin,RoleCheckMixin,View):
     login_url = "/login/"
 
     def get(self, request, *args, **kwargs): 
+        job = Job.objects.get(pk=self.kwargs.get("job_id"))#pylint: disable=E1101
         if self.kwargs.get("action") == "create":
-            job = Job.objects.get(pk=self.kwargs.get("job_id")) #pylint: disable=E1101
             existing_application = Application.objects.filter( #pylint: disable=E1101
             job=job,
             applicant=request.user  

@@ -5,3 +5,4 @@ media/
 .venv/
 venv/ 
 todo.txt
+logs/

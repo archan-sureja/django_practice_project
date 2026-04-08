@@ -7,6 +7,7 @@ from django.views.generic import FormView, View , ListView , DetailView
 from django.utils import timezone
 from main_app.forms import LoginForm
 from main_app.models import Job
+from main_app.file_handling import ValidationUploadHandler
 class LoginView(FormView):
     template_name = "auth/login.html"
     form_class = LoginForm
@@ -40,3 +41,5 @@ class RoleCheckMixin:
         if request.user.role != self.role:
             return HttpResponseForbidden("You are not authorized to access this page")
         return super().dispatch(request, *args, **kwargs)
+
+

@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from .models import Application, Company , Skill
+from .models import Application, Company, Job , Skill
 User = get_user_model()
 class SignUpFormRecruiter(UserCreationForm):
     """ custom sign up form"""
@@ -72,6 +72,7 @@ class SignUpFormApplicant(UserCreationForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+        self.helper.enctype = 'multipart/form-data' # to handle file uploads
         self.helper.add_input(Submit('submit','Sign up',css_class="btn btn-primary"))
 
 class LoginForm(forms.Form):
@@ -93,4 +94,33 @@ class ApplicationForm(forms.ModelForm):
     class Meta:
         model = Application 
         fields = ["cover_letter"]
-        
+    
+class ChangeStatus(forms.Form):
+    STATUS= [("PENDING","pending"),("REVIEWED","reviewed"),("REJECTED","rejected")]
+    status = forms.ChoiceField()
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.fields["status"].choices = self.STATUS
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit','Update Status',css_class="btn btn-primary"))
+    
+class CreateJobForm(forms.ModelForm):
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit','Create Job',css_class="btn btn-primary"))
+    class Meta:
+        model = Job
+        fields = ["title","description","location","deadline","salary_min","salary_max","job_type"]
+
+class EditJobForm(forms.ModelForm):
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit','Update Job',css_class="btn btn-primary"))
+    class Meta:
+        model = Job
+        fields = ["title","description","location","deadline","salary_min","salary_max","job_type"]

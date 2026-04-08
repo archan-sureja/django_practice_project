@@ -9,11 +9,13 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os 
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+os.makedirs(LOGS_DIR, exist_ok=True)
 
 
 # Quick-start development settings - unsuitable for production
@@ -36,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'daphne',
     'django.contrib.staticfiles',
     'crispy_forms',
     'crispy_bootstrap4',
@@ -45,6 +48,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'main_app.middleware.CustomFileUploadHandlerMiddleware', # custom middleware to use custom file upload handler for handling large file uploads and validating file types and sizes
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -53,7 +57,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'main_app.middleware.MaintenanceModeMiddleware' # custom middleware to check if site is in maintenance mode or not and then show maintenance page accordingly
+    'main_app.middleware.MaintenanceModeMiddleware', # custom middleware to check if site is in maintenance mode or not and then show maintenance page accordingly
+    'main_app.middleware.LoggingMiddleware',
 ]
 INTERNAL_IPS = ['127.0.0.1']
 ROOT_URLCONF = 'config.urls'
@@ -73,6 +78,7 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'config.asgi.application'
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
@@ -146,3 +152,44 @@ LOGOUT_REDIRECT_URL = "/login/"
 MAINTENANCE_MODE = False # custom setting to enable maintenance mode for whole site , can be used in middleware to check if site is in maintenance mode or not and then show maintenance page accordingly
 
 CRISPY_TEMPLATE_PACK = "bootstrap4" # setting for crispy forms to use bootstrap 4 css classes for styling forms
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{levelname}] {asctime} {name} - {message}',
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'simple': {
+            'format': '[{levelname}] {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOGS_DIR, 'django.log'),
+            'maxBytes': 1024 * 1024 * 10,  # 10MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}

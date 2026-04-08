@@ -18,7 +18,7 @@ class User(AbstractUser):
     role = models.CharField(choices=ROLES)
     # email = models.EmailField(unique=True)
     @property
-    def full_name(self):
+    def fullname(self):
         return self.first_name + " " + self.last_name
 
     def __str__(self):
@@ -80,7 +80,7 @@ class Application(models.Model):
     STATUS= [("PENDING","pending"),("REVIEWED","reviewed"),("REJECTED","rejected")]
     job = models.ForeignKey(Job,on_delete=models.CASCADE,related_name="applications")
     applicant = models.ForeignKey(User,on_delete=models.CASCADE,related_name="applcations")
-    cover_letter = models.FileField()
+    cover_letter = models.FileField(upload_to="cover_letters/")
     status = models.CharField(choices=STATUS,default="PENDING")
     applied_at = models.DateField(default=timezone.localdate)
 
@@ -96,4 +96,5 @@ def update_profile_signal(sender, instance, created, **kwargs):
         elif instance.role == "REC":
             RecruiterProfile.objects.create(user=instance) # pylint: disable=E1101
         else:
-            raise ValueError("Invalid role for user")
+            pass 
+            # raise ValueError("Invalid role for user")

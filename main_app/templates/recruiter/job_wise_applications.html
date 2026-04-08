@@ -7,6 +7,7 @@
                     <td>applicant name </td> 
                     <td>skills</td>
                     <td>experience</td>
+                    <td>status</td>
                     <td></td>
                 </tr>
             </thead>
@@ -16,7 +17,8 @@
                 <td>{{item.applicant}}</td>
                 <td>{{item.applicant.applicant_profile.skills.all|join:","}}</td>
                 <td>{{item.applicant.applicant_profile.experience}}</td>
-                <td><a href="{% url 'process_application' application.id %}">details</a></td>
+                <td>{{item.status}}</td>
+                <td><a href="{% url 'process_application' item.id %}">view details</a></td>
             </tr>
             {% endfor %}
         </tbody>
