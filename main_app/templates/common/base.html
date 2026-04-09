@@ -14,9 +14,37 @@
 {% include 'common/message.html' %}
 
 <div class="container mt-5">
+    <p hidden id="user_id">{{user.id}}</p>
+    <p hidden id="channel_name"></p>
     <h2>{% block heading %}{% endblock heading%}</h2>
     {% block content %} 
     {% endblock content %}
 </div>
+<script>
+  
+    function connect() {
+        let user_id = document.getElementById("user_id").innerText
+        console.log(user_id)
+        const socket = new WebSocket("ws://localhost:8000/notify/applicant/"+user_id+"/");
+
+        socket.onopen = () => {
+            console.log("connected")
+            console.log(user_id)
+            socket.onmessage = (event)=>{
+                payload = JSON.parse(event.data)
+                if(payload && payload.action=="notification"){
+                    window.alert(payload.message)
+                }
+            }
+
+        };
+
+
+        /*socket.onclose = () => {
+            setTimeout(connect, 500); // reconnect
+        };*/
+    }
+connect()
+</script>
 </body>
 </html>

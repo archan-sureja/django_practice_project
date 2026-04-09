@@ -98,3 +98,9 @@ def update_profile_signal(sender, instance, created, **kwargs):
         else:
             pass 
             # raise ValueError("Invalid role for user")
+    
+class ActiveApplicants(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    channel_name = models.CharField()
+
+

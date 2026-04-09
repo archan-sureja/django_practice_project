@@ -5,9 +5,11 @@ from django.contrib.auth.models import Group
 from django.contrib import messages
 from django.db.models import Prefetch
 from main_app.forms import EditJobForm, SignUpFormRecruiter, ChangeStatus , CreateJobForm
-from main_app.models import Application, RecruiterProfile, Job, User, ApplicantProfile
+from main_app.models import Application, RecruiterProfile, Job,ApplicantProfile , ActiveApplicants
 from main_app.views.common_views import ListView
 from main_app.views.common_views import RoleCheckMixin
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 class SignupRecruiter(CreateView):
     form_class = SignUpFormRecruiter
@@ -74,6 +76,12 @@ class ProcessApplication(LoginRequiredMixin,RoleCheckMixin,View):
             id = self.kwargs.get('application_id')
         ).select_related('applicant').prefetch_related(applicant_profiles)[0]
         form = ChangeStatus(initial={"status":application.status})
+        channel_layer = get_channel_layer()
+        entry = ActiveApplicants.objects.filter(user=application.applicant).first()
+        async_to_sync(channel_layer.send)(entry.channel_name,{
+            "type":"notification.send",
+            "message":f"{request.user} has viewed your application"
+        })
         return render(request,"recruiter/process_application.html",{"application":application,"form":form})
     
     def post(self,request,*args,**kwargs):
